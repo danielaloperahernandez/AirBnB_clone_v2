@@ -2,8 +2,8 @@
 # Sets environmental variables
 
 export HBNB_ENV="dev"
-HBNB_MYSQL_USER="root"
-HBNB_MYSQL_PWD=""
-HBNB_MYSQL_HOST="localhost"
-HBNB_MYSQL_DB="db"
-HBNB_TYPE_STORAGE="file"
+export HBNB_MYSQL_USER="root"
+export HBNB_MYSQL_PWD=""
+export HBNB_MYSQL_HOST="localhost"
+export HBNB_MYSQL_DB="db"
+export HBNB_TYPE_STORAGE="file"
