@@ -2,7 +2,7 @@
 """ """
 from models.base_model import BaseModel
 import unittest
-import datetime
+from datetime import datetime
 from uuid import UUID
 import json
 import os
@@ -19,6 +19,8 @@ class test_basemodel(unittest.TestCase):
 
     def setUp(self):
         """ """
+        self.b2 = BaseModel()
+        self.b1 = BaseModel()
         pass
 
     def tearDown(self):
@@ -74,26 +76,23 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
-    def test_kwargs_one(self):
-        """ """
-        n = {'Name': 'test'}
-        with self.assertRaises(KeyError):
-            new = self.value(**n)
+    def test_kwargs(self):
+        """ checks if an instance is created from a dictionary """
+        dictionary = self.b1.to_dict()
+        b1_copy_test = BaseModel(**dictionary)
+        self.assertIsInstance(b1_copy_test, BaseModel)
 
     def test_id(self):
         """ """
         new = self.value()
         self.assertEqual(type(new.id), str)
 
-    def test_created_at(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.created_at), datetime.datetime)
-
-    def test_updated_at(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.updated_at), datetime.datetime)
-        n = new.to_dict()
-        new = BaseModel(**n)
-        self.assertFalse(new.created_at == new.updated_at)
+    def test_created_updated(self):
+        """ checks if the instance for created_at and updated_at
+        are datetime objects """
+        self.assertIsInstance(self.b2, BaseModel)
+        self.assertTrue(hasattr(self.b2, "created_at"))
+        self.assertTrue(hasattr(self.b2, "updated_at"))
+        self.assertIsInstance(self.b2.created_at, datetime)
+        self.assertIsInstance(self.b2.updated_at, datetime)
+        self.assertNotEqual(self.b2.created_at, self.b2.updated_at)
