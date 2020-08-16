@@ -1,98 +1,107 @@
 #!/usr/bin/python3
-""" """
-from models.base_model import BaseModel
-import unittest
-from datetime import datetime
-from uuid import UUID
-import json
-import os
+"""Module to define the BaseModel Class"""
+import uuid
+import datetime as dt
+import models
 
 
-class test_basemodel(unittest.TestCase):
-    """ """
+class BaseModel:
+    """class that defines all common attributes/methods for other classes"""
 
     def __init__(self, *args, **kwargs):
-        """ """
-        super().__init__(*args, **kwargs)
-        self.name = 'BaseModel'
-        self.value = BaseModel
+        """Base class constructor method
 
-    def setUp(self):
-        """ """
-        self.b2 = BaseModel()
-        self.b1 = BaseModel()
-        pass
+        Args:
+            args: Received Tuple with parameters to initialize a new object
+            kwargs: Recceived Dictionary with parameters to init a new object.
+        """
+        if kwargs is not None and len(kwargs) > 0:
+            for key, v in kwargs.items():
+                if key in ["created_at", "updated_at"]:
+                    setattr(self, key, dt.datetime.strptime(v,
+                            '%Y-%m-%dT%H:%M:%S.%f'))
+                elif key == "id":
+                    self.id = v
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = dt.datetime.now()
+            self.updated_at = dt.datetime.now()
+            models.storage.new(self)
 
-    def tearDown(self):
-        try:
-            os.remove('file.json')
-        except:
-            pass
+    def save(self):
+        """updates the public instance attribute updated_at with
+        the current datetime.
+        """
+        self.updated_at = dt.datetime.now()
+        models.storage.new(self)
+        models.storage.save()
 
-    def test_default(self):
-        """ """
-        i = self.value()
-        self.assertEqual(type(i), self.value)
+    def to_dict(self):
+        """returns a dictionary containing all keys/values of __dict__
+        of the instance.
+        """
+        myDict = self.__dict__.copy()
+        myDict["__class__"] = self.__class__.__name__
+        myDict["created_at"] = self.created_at.isoformat()
+        myDict["updated_at"] = self.updated_at.isoformat()
+        return myDict
 
-    def test_kwargs(self):
-        """ """
-        i = self.value()
-        copy = i.to_dict()
-        new = BaseModel(**copy)
-        self.assertFalse(new is i)
+    def __str__(self):
+        """string representation of the created class.
 
-    def test_kwargs_int(self):
-        """ """
-        i = self.value()
-        copy = i.to_dict()
-        copy.update({1: 2})
-        with self.assertRaises(TypeError):
-            new = BaseModel(**copy)
+        Return:
+            format: [<class name>] (<self.id>) <self.__dict__>
+        """
+        string = "[{}] ({}) {}".format(
+            self.__class__.__name__,
+            self.id,
+            self.__dict__)
+        return string
 
-    def test_save(self):
-        """ Testing save """
-        i = self.value()
-        i.save()
-        key = self.name + "." + i.id
-        with open('file.json', 'r') as f:
-            j = json.load(f)
-            self.assertEqual(j[key], i.to_dict())
+    def all(class_name):
+        """Update your command interpreter
+        (console.py) to retrieve all instances of
+        a class by using: <class name>.all()
+        """
+        dir_obj = models.storage.all()
+        my_list = []
+        for obj_id in dir_obj.keys():
+            if dir_obj[obj_id].__class__.__name__ == class_name:
+                my_list.append(str(dir_obj[obj_id]))
+        return my_list
 
-    def test_str(self):
-        """ """
-        i = self.value()
-        self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
+    def count(class_name):
+        """Update your command interpreter
+        (console.py) to retrieve the number of
+        instances of a class: <class name>.count()."""
+        dir_obj = models.storage.all()
+        n_elem = 0
+        for obj_id in dir_obj.keys():
+            if dir_obj[obj_id].__class__.__name__ == class_name:
+                n_elem += 1
+        return n_elem
 
-    def test_todict(self):
-        """ """
-        i = self.value()
-        n = i.to_dict()
-        self.assertEqual(i.to_dict(), n)
+    def show(class_name):
+        """Update your command interpreter
+        (console.py) to retrieve the number of
+        instances of a class: <class name>.count()."""
+        dir_obj = models.storage.all()
+        args = class_name.split(',')
+        for obj_id in dir_obj.keys():
+            if dir_obj[obj_id].__class__.__name__ == args[0]\
+               and dir_obj[obj_id].id == args[1]:
+                return dir_obj[obj_id]
+        return
 
-    def test_kwargs_none(self):
-        """ """
-        n = {None: None}
-        with self.assertRaises(TypeError):
-            new = self.value(**n)
-
-    def test_kwargs(self):
-        """ checks if an instance is created from a dictionary """
-        dictionary = self.b1.to_dict()
-        b1_copy_test = BaseModel(**dictionary)
-        self.assertIsInstance(b1_copy_test, BaseModel)
-
-    def test_id(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.id), str)
-
-    def test_created_updated(self):
-        """ checks if the instance for created_at and updated_at
-        are datetime objects """
-        self.assertIsInstance(self.b2, BaseModel)
-        self.assertTrue(hasattr(self.b2, "created_at"))
-        self.assertTrue(hasattr(self.b2, "updated_at"))
-        self.assertIsInstance(self.b2.created_at, datetime)
-        self.assertIsInstance(self.b2.updated_at, datetime)
-        self.assertNotEqual(self.b2.created_at, self.b2.updated_at)
+    def destroy(class_name):
+        """Update your command interpreter
+        (console.py) to retrieve the number of
+        instances of a class: <class name>.count()."""
+        dir_obj = models.storage.all()
+        args = class_name.split(',')
+        key = "{}.{}".format(args[0], args[1])
+        if key not in dir_obj.keys():
+            print("** no instance found **")
+        else:
+            models.storage.delete(key)
+        return
