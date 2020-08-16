@@ -127,7 +127,6 @@ class HBNBCommand(cmd.Cmd):
         new_instance.save()
         print("{}".format(new_instance.id))
 
-
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
@@ -154,7 +153,7 @@ class HBNBCommand(cmd.Cmd):
         if not c_id:
             print("** instance id missing **")
             return
-        
+
         objects = storage.all()
         key = c_name + "." + c_id
         try:
@@ -323,6 +322,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
