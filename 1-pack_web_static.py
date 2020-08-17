@@ -5,7 +5,6 @@ import os.path
 from fabric.api import local
 
 
-
 def do_pack():
     """Create a .tgz file from web_static."""
     date_t = datetime.utcnow()
