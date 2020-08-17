@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/python3
 # Fabfile to generates a .tgz archive from web_static.
 from datetime import datetime
 import os.path
