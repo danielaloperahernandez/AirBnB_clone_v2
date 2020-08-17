@@ -26,9 +26,11 @@ class DBStorage():
         from models.city import City
         from models.user import User
         from models.place import Place
+        from models.review import Review
+        from models.amenity import Amenity
 
         class_list = [
-            State, City, User, Place]
+            State, City, User, Place, Review, Amenity]
 
         rows = []
 
