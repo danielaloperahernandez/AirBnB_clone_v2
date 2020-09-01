@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """script that starts a Flask web application"""
 
-from flask import Flask, escape
+from flask import Flask
 app = Flask(__name__)
 
 
@@ -20,7 +20,7 @@ def hbnb():
 @app.route('/c/<text>', strict_slashes=False)
 def c(text):
     """function that displays: C <text>"""
-    return 'C %s'.replace("_", " ") % escape(text)
+    return 'C %s' % text.replace("_", " ")
 
 
 @app.route('/python/<text>', strict_slashes=False)
@@ -28,7 +28,7 @@ def c(text):
            defaults={"text": "is cool"}, strict_slashes=False)
 def python(text):
     """function that displays: Python <text>"""
-    return 'Python %s'.replace("_", " ") % escape(text)
+    return 'Python %s' % text.replace("_", " ")
 
 
 if __name__ == '__main__':
