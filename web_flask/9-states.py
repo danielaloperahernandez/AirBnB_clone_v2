@@ -12,12 +12,22 @@ def closedb(stor):
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
-def states_template():
-    """function that route /states_list"""
-    states = list(storage.all(State).values())
-    states.sort(key=lambda state: state.name)
-    return render_template('8-cities_by_states.html', states=states)
+@app.route('/states', strict_slashes=False, defaults={'id': None})
+@app.route('/states/<id>', strict_slashes=False)
+def states_template_id(id):
+    """function that route /states/<id>"""
+    state = states = None
+    if not id:
+        states = list(storage.all(State).values())
+    else:
+        states = storage.all(State)
+        key = "State." + id
+        if key in states:
+            state = states[key]
+        else:
+            state = None
+        states = []
+    return render_template('9-states.html', **locals())
 
 if __name__ == '__main__':
     storage.reload()
